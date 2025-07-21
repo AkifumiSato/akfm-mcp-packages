@@ -11,11 +11,10 @@
   "files": {
     "includes": [
       "**",
-      "!public/**",
-      "!package.json",
-      "!package-lock.json",
-      "!docs/akfm-knowledge/**",
-      "!.next"
+      "!**/dist/**",
+      "!**/storybook-static/**",
+      "!**/package.json",
+      "!pnpm-lock.yaml"
     ]
   },
   "formatter": {
