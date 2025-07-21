@@ -1,0 +1,6 @@
+{
+  "enabledMcpjsonServers": [
+    "storybook-mcp"
+  ],
+  "enableAllProjectMcpServers": true
+}
