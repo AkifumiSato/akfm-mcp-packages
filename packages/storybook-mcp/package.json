@@ -26,5 +26,8 @@
   },
   "bin": {
     "akfm-storybook-mcp": "dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
