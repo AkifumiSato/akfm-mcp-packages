@@ -25,6 +25,6 @@
     "node": ">=18.0.0"
   },
   "bin": {
-    "storybook-mcp": "dist/index.js"
+    "akfm-storybook-mcp": "dist/index.js"
   }
 }
