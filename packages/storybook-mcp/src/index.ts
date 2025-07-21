@@ -36,7 +36,8 @@ const tools: Tool[] = [
           type: "string",
         },
         storyName: {
-          description: "Story export constant name (e.g., Default, Primary) - NOT the story object's name property",
+          description:
+            "Story export constant name (e.g., Default, Primary) - NOT the story object's name property",
           type: "string",
         },
         timeout: {
@@ -64,7 +65,8 @@ const tools: Tool[] = [
           type: "string",
         },
         storyName: {
-          description: "Story export constant name (e.g., Default, Primary) - NOT the story object's name property",
+          description:
+            "Story export constant name (e.g., Default, Primary) - NOT the story object's name property",
           type: "string",
         },
         timeout: {

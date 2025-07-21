@@ -14,7 +14,9 @@
       "!**/dist/**",
       "!**/storybook-static/**",
       "!**/package.json",
-      "!pnpm-lock.yaml"
+      "!pnpm-lock.yaml",
+      "!.turbo",
+      "!.claude"
     ]
   },
   "formatter": {
