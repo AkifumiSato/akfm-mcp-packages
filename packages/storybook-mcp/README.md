@@ -1,5 +1,9 @@
 # `@akfm/storybook-mcp`
 
+[![npm version](https://badge.fury.io/js/@akfm%2Fstorybook-mcp.svg)](https://badge.fury.io/js/@akfm%2Fstorybook-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 An MCP server that retrieves accessibility trees and takes screenshots from Storybook Stories.
 
 ## Quick Start (Users)
