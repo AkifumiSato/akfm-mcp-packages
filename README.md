@@ -1,0 +1,3 @@
+# `@akfm/${name}-mcp`
+
+TBW
