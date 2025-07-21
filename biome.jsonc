@@ -16,7 +16,7 @@
       "!**/package.json",
       "!pnpm-lock.yaml",
       "!.turbo",
-      "!.claude"
+      "!.claude/**"
     ]
   },
   "formatter": {

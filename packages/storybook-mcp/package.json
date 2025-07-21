@@ -7,13 +7,15 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@axe-core/playwright": "4.10.1",
-    "@modelcontextprotocol/sdk": "0.6.1",
+    "@modelcontextprotocol/sdk": "1.16.0",
     "just-kebab-case": "4.2.0",
-    "playwright": "1.52.0"
+    "playwright": "1.52.0",
+    "zod": "3.25.67"
   },
   "devDependencies": {
     "@types/node": "22.15.3",

@@ -1,6 +1,18 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm biome check:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm exec:*)",
+      "Bash(turbo run:*)",
+      "mcp__storybook-mcp__get_storybook_screenshot",
+      "mcp__storybook-mcp__get_storybook_a11y_tree"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "storybook-mcp"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }
