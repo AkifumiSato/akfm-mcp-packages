@@ -10,7 +10,7 @@ An MCP server that retrieves accessibility trees and takes screenshots from Stor
 npx playwright install
 ```
 
-2. Add the MCP server to your Cursor _mcp.json_ or similar configuration:
+2. Add the MCP server to your `.cursor/mcp.json`, `.mcp.json`, or similar configuration:
 
 ```json
 {
@@ -46,6 +46,17 @@ pnpm build
 }
 ```
 
+> [!NOTE]
+> **storyName Parameter**: The `storyName` parameter should be the export constant name from your story file, not the story object's `name` property. 
+> 
+> For example, if your story file has:
+> ```typescript
+> export const Default = { ... }
+> export const Primary = { ... }
+> ```
+> 
+> Use `"Default"` or `"Primary"` as the `storyName`, not the value of the story's `name` property.
+
 ## MCP Specs
 
 ### `get_storybook_a11y_tree`
@@ -55,8 +66,8 @@ Retrieves the accessibility tree from a Storybook Story.
 **Parameters:**
 - `title` (string, required): Story title
   - Example: `MyTest/SomeText`, `Button`
-- `storyName` (string, required): Story name
-  - Example: `Default`, `Primary`
+- `storyName` (string, required): Story export constant name (NOT the story object's name property)
+  - Example: `Default`, `Primary` (these are the names after `export const`)
 - `host` (string, optional): Storybook host URL (default: `http://localhost:6006`)
 - `timeout` (number, optional): Timeout in milliseconds (default: 30000)
 
@@ -86,8 +97,8 @@ Takes a screenshot of a Storybook Story.
 **Parameters:**
 - `title` (string, required): Story title
   - Example: `MyTest/SomeText`, `Button`
-- `storyName` (string, required): Story name
-  - Example: `Default`, `Primary`
+- `storyName` (string, required): Story export constant name (NOT the story object's name property)
+  - Example: `Default`, `Primary` (these are the names after `export const`)
 - `host` (string, optional): Storybook host URL (default: `http://localhost:6006`)
 - `timeout` (number, optional): Timeout in milliseconds (default: 30000)
 
