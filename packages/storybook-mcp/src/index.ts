@@ -9,7 +9,7 @@ import {
   getStorybookConsoleLogs,
   getStorybookNetworkRequests,
   getStorybookScreenshot,
-} from "./storybook/index.js";
+} from "./storybook.js";
 
 const server = new McpServer(
   {

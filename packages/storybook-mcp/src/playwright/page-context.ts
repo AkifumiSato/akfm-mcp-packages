@@ -1,7 +1,7 @@
 import type { Browser, Page } from "playwright";
 import { chromium } from "playwright";
 import type { StorybookParams } from "../types.js";
-import { generateStorybookUrl } from "./url-generator.js";
+import { generateStorybookUrl } from "../url-generator.js";
 
 export class StorybookPageContext {
   constructor(
@@ -14,12 +14,10 @@ export class StorybookPageContext {
   }
 }
 
-export async function createStorybookPage({
-  host,
-  title,
-  storyName,
-  timeout = 30000,
-}: StorybookParams): Promise<StorybookPageContext> {
+export async function createStorybookPage(
+  params: StorybookParams,
+): Promise<StorybookPageContext> {
+  const { host, title, storyName, timeout = 30000 } = params;
   const url = generateStorybookUrl(host, title, storyName);
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();

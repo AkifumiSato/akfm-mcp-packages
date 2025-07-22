@@ -1,17 +1,17 @@
+import { convertAXNodesToA11yTree } from "./playwright/accessibility-tree.js";
+import { createStorybookPageWithConsoleTracking } from "./playwright/console-logs.js";
+import {
+  createStorybookPageWithNetworkTracking,
+  summarizeNetworkRequests,
+} from "./playwright/network-tracking.js";
+import { createStorybookPage } from "./playwright/page-context.js";
 import type {
   A11yNode,
   AccessibilityTreeResponse,
   ConsoleLog,
   NetworkRequestsResult,
   StorybookParams,
-} from "../types.js";
-import { convertAXNodesToA11yTree } from "./accessibility-tree.js";
-import { createStorybookPageWithConsoleTracking } from "./console-logs.js";
-import {
-  createStorybookPageWithNetworkTracking,
-  summarizeNetworkRequests,
-} from "./network-tracking.js";
-import { createStorybookPage } from "./page-context.js";
+} from "./types.js";
 
 export async function getStorybookA11yTree(
   params: StorybookParams,
@@ -43,10 +43,9 @@ export async function getStorybookScreenshot(
 export async function getStorybookNetworkRequests(
   params: StorybookParams,
 ): Promise<NetworkRequestsResult> {
-  const { context, requests } =
-    await createStorybookPageWithNetworkTracking(params);
-
-  await using _ = context;
+  const result = await createStorybookPageWithNetworkTracking(params);
+  await using context = result.context;
+  const { requests } = result;
 
   // Wait a bit more to capture any additional network requests
   await context.page.waitForTimeout(1000);
@@ -64,10 +63,9 @@ export async function getStorybookNetworkRequests(
 export async function getStorybookConsoleLogs(
   params: StorybookParams,
 ): Promise<ConsoleLog[]> {
-  const { context, logs } =
-    await createStorybookPageWithConsoleTracking(params);
-
-  await using _ = context;
+  const result = await createStorybookPageWithConsoleTracking(params);
+  await using context = result.context;
+  const { logs } = result;
 
   // Wait a bit more to capture any additional console logs
   await context.page.waitForTimeout(1000);

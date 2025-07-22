@@ -1,17 +1,15 @@
 import { chromium } from "playwright";
 import type { ConsoleLog, StorybookParams } from "../types.js";
+import { generateStorybookUrl } from "../url-generator.js";
 import { StorybookPageContext } from "./page-context.js";
-import { generateStorybookUrl } from "./url-generator.js";
 
-export async function createStorybookPageWithConsoleTracking({
-  host,
-  title,
-  storyName,
-  timeout = 30000,
-}: StorybookParams): Promise<{
+export async function createStorybookPageWithConsoleTracking(
+  params: StorybookParams,
+): Promise<{
   context: StorybookPageContext;
   logs: ConsoleLog[];
 }> {
+  const { host, title, storyName, timeout = 30000 } = params;
   const url = generateStorybookUrl(host, title, storyName);
   const browser = await chromium.launch({ headless: true });
   const browserContext = await browser.newContext();

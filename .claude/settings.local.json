@@ -13,7 +13,9 @@
       "mcp__storybook-mcp__get_storybook_network_requests",
       "Bash(mkdir:*)",
       "WebFetch(domain:localhost)",
-      "mcp__storybook-mcp__get_storybook_console_logs"
+      "mcp__storybook-mcp__get_storybook_console_logs",
+      "Bash(mv:*)",
+      "Bash(curl:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
