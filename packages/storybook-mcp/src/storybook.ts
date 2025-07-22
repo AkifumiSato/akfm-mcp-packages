@@ -2,30 +2,18 @@ import kebabCase from "just-kebab-case";
 import { chromium } from "playwright";
 import type { A11yNode, AccessibilityTreeResponse, AXNode } from "./types.js";
 
-export function generateStorybookUrl(
-  host: string,
-  title: string,
-  storyName: string,
-): string {
-  // Convert title: MyTest/SomeText -> mytest-sometext
-  const convertedTitle = title
-    .toLowerCase()
-    .replace(/\//g, "-")
-    .replace(/\s+/g, "");
-
-  // Convert story name from camelCase to kebab-case: MyStoryName -> my-story-name
-  const convertedStoryName = kebabCase(storyName);
-
-  // Generate the id: mytest-sometext--my-story-name
-  const id = `${convertedTitle}--${convertedStoryName}`;
-
-  return `${host}/iframe.html?globals=&args=&id=${id}&viewMode=story`;
-}
-
-export async function getStorybookA11yTree(
-  url: string,
+export async function getStorybookA11yTree({
+  host,
+  title,
+  storyName,
   timeout = 30000,
-): Promise<A11yNode> {
+}: {
+  host: string;
+  title: string;
+  storyName: string;
+  timeout?: number;
+}): Promise<A11yNode> {
+  const url = generateStorybookUrl(host, title, storyName);
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -113,10 +101,18 @@ function convertAXNodesToA11yTree(nodes: AXNode[]): A11yNode {
   };
 }
 
-export async function getStorybookScreenshot(
-  url: string,
+export async function getStorybookScreenshot({
+  host,
+  title,
+  storyName,
   timeout = 30000,
-): Promise<Buffer> {
+}: {
+  host: string;
+  title: string;
+  storyName: string;
+  timeout?: number;
+}): Promise<Buffer> {
+  const url = generateStorybookUrl(host, title, storyName);
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -141,4 +137,24 @@ export async function getStorybookScreenshot(
   } finally {
     await browser.close();
   }
+}
+
+function generateStorybookUrl(
+  host: string,
+  title: string,
+  storyName: string,
+): string {
+  // Convert title: MyTest/SomeText -> mytest-sometext
+  const convertedTitle = title
+    .toLowerCase()
+    .replace(/\//g, "-")
+    .replace(/\s+/g, "");
+
+  // Convert story name from camelCase to kebab-case: MyStoryName -> my-story-name
+  const convertedStoryName = kebabCase(storyName);
+
+  // Generate the id: mytest-sometext--my-story-name
+  const id = `${convertedTitle}--${convertedStoryName}`;
+
+  return `${host}/iframe.html?globals=&args=&id=${id}&viewMode=story`;
 }

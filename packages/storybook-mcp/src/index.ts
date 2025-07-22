@@ -4,11 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { formatA11yResults } from "./formatter.js";
-import {
-  generateStorybookUrl,
-  getStorybookA11yTree,
-  getStorybookScreenshot,
-} from "./storybook.js";
+import { getStorybookA11yTree, getStorybookScreenshot } from "./storybook.js";
 
 const server = new McpServer(
   {
@@ -42,14 +38,18 @@ server.registerTool(
     storyName,
   }) => {
     try {
-      const url = generateStorybookUrl(host, title, storyName);
-      const a11yResults = await getStorybookA11yTree(url, timeout);
+      const a11yResults = await getStorybookA11yTree({
+        host,
+        storyName,
+        timeout,
+        title,
+      });
       const formattedResults = formatA11yResults(a11yResults);
 
       return {
         content: [
           {
-            text: `Accessibility analysis for ${title}/${storyName} (${url}):\n\n${formattedResults}`,
+            text: `Accessibility analysis for ${title}/${storyName}:\n\n${formattedResults}`,
             type: "text" as const,
           },
           {
@@ -85,15 +85,18 @@ server.registerTool(
     storyName,
   }) => {
     try {
-      const url = generateStorybookUrl(host, title, storyName);
-      const screenshot = await getStorybookScreenshot(url, timeout);
-
+      const screenshot = await getStorybookScreenshot({
+        host,
+        storyName,
+        timeout,
+        title,
+      });
       const base64Screenshot = screenshot.toString("base64");
 
       return {
         content: [
           {
-            text: `Screenshot captured for ${title}/${storyName} (${url})`,
+            text: `Screenshot captured for ${title}/${storyName}`,
             type: "text" as const,
           },
           {
