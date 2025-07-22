@@ -1,10 +1,12 @@
 import type {
   A11yNode,
   AccessibilityTreeResponse,
+  ConsoleLog,
   NetworkRequestsResult,
   StorybookParams,
 } from "../types.js";
 import { convertAXNodesToA11yTree } from "./accessibility-tree.js";
+import { createStorybookPageWithConsoleTracking } from "./console-logs.js";
 import {
   createStorybookPageWithNetworkTracking,
   summarizeNetworkRequests,
@@ -57,4 +59,18 @@ export async function getStorybookNetworkRequests(
     requests: requestsList,
     summary,
   };
+}
+
+export async function getStorybookConsoleLogs(
+  params: StorybookParams,
+): Promise<ConsoleLog[]> {
+  const { context, logs } =
+    await createStorybookPageWithConsoleTracking(params);
+
+  await using _ = context;
+
+  // Wait a bit more to capture any additional console logs
+  await context.page.waitForTimeout(1000);
+
+  return logs;
 }

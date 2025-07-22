@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 type Product = {
   id: number;
@@ -34,6 +35,14 @@ export const Product = ({ productId = 1 }: ProductProps) => {
     queryFn: () => fetchProduct(productId),
     queryKey: ["product", productId],
   });
+
+  useEffect(() => {
+    // Test console message.
+    console.info("Custom Message.");
+    console.log("Custom Message.");
+    console.warn("Custom Message.");
+    console.error("Custom Message.");
+  }, []);
 
   if (isLoading) {
     return (

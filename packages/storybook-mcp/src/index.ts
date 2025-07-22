@@ -6,6 +6,7 @@ import { z } from "zod";
 import { formatA11yResults } from "./formatter.js";
 import {
   getStorybookA11yTree,
+  getStorybookConsoleLogs,
   getStorybookNetworkRequests,
   getStorybookScreenshot,
 } from "./storybook/index.js";
@@ -181,6 +182,69 @@ server.registerTool(
         content: [
           {
             text: `Error tracking network requests: ${error}`,
+            type: "text" as const,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.registerTool(
+  "get_storybook_console_logs",
+  {
+    description: "Capture console logs during Storybook story loading",
+    inputSchema: StorybookArgsSchema,
+  },
+  async ({
+    host = "http://localhost:6006",
+    timeout = 30000,
+    title,
+    storyName,
+  }) => {
+    try {
+      const logs = await getStorybookConsoleLogs({
+        host,
+        storyName,
+        timeout,
+        title,
+      });
+
+      const logsText = logs
+        .map((log) => {
+          const timestamp = new Date(log.timestamp).toISOString();
+          const location = log.location
+            ? ` (${log.location.url}:${log.location.lineNumber}:${log.location.columnNumber})`
+            : "";
+          return `[${timestamp}] ${log.type.toUpperCase()}: ${log.text}${location}`;
+        })
+        .join("\n");
+
+      const summaryText = `Summary: ${logs.length} total console logs
+- Error: ${logs.filter((log) => log.type === "error").length}
+- Warning: ${logs.filter((log) => log.type === "warning").length}
+- Info: ${logs.filter((log) => log.type === "info").length}
+- Log: ${logs.filter((log) => log.type === "log").length}
+- Debug: ${logs.filter((log) => log.type === "debug").length}`;
+
+      return {
+        content: [
+          {
+            text: `Console logs for ${title}/${storyName}:\n\n${summaryText}\n\nLogs:\n${logsText}`,
+            type: "text" as const,
+          },
+          {
+            text: `Raw console data:\n\n${JSON.stringify(logs, null, 2)}`,
+            type: "text" as const,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            text: `Error capturing console logs: ${error}`,
             type: "text" as const,
           },
         ],

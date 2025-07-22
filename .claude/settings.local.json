@@ -12,7 +12,8 @@
       "Bash(pnpm build:*)",
       "mcp__storybook-mcp__get_storybook_network_requests",
       "Bash(mkdir:*)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "mcp__storybook-mcp__get_storybook_console_logs"
     ]
   },
   "enableAllProjectMcpServers": true,

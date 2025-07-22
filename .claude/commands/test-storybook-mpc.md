@@ -11,5 +11,8 @@ storybook-mcpが期待通り動作しているか確認します。以下のテ�
 
 ## テスト
 
-1. `playground/storybook/src/components/product.stories.tsx`のAOMが取得できるか
-2. `playground/storybook/src/components/product.stories.tsx`のネットワークリクエストが取得できるか、また`https://dummyjson.com/products/1`がリクエストに含まれているかt
+`playground/storybook/src/components/product.stories.tsx`について、以下を確認してください。
+
+1. AOMが取得できるか
+2. ネットワークリクエストが取得できるか、また`https://dummyjson.com/products/1`がリクエストに含まれているか
+3. consoleの出力内容を取得できるか、またそれぞれに「Custom Message.」という出力が含まれているか

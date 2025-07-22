@@ -127,6 +127,17 @@ export type CDPNetworkLoadingFailedParams = {
   errorText: string;
 };
 
+export type ConsoleLog = {
+  type: string;
+  text: string;
+  timestamp: number;
+  location?: {
+    url: string;
+    lineNumber: number;
+    columnNumber: number;
+  };
+};
+
 export type StorybookParams = {
   host: string;
   title: string;
