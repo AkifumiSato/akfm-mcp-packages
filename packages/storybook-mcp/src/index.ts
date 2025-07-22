@@ -8,7 +8,7 @@ import {
   getStorybookA11yTree,
   getStorybookNetworkRequests,
   getStorybookScreenshot,
-} from "./storybook.js";
+} from "./storybook/index.js";
 
 const server = new McpServer(
   {
