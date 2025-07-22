@@ -11,7 +11,8 @@
       "mcp__storybook-mcp__get_storybook_a11y_tree",
       "Bash(pnpm build:*)",
       "mcp__storybook-mcp__get_storybook_network_requests",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebFetch(domain:localhost)"
     ]
   },
   "enableAllProjectMcpServers": true,
