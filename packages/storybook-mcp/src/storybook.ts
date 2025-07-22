@@ -1,18 +1,32 @@
 import kebabCase from "just-kebab-case";
+import type { Browser, Page } from "playwright";
 import { chromium } from "playwright";
-import type { A11yNode, AccessibilityTreeResponse, AXNode } from "./types.js";
+import type {
+  A11yNode,
+  AccessibilityTreeResponse,
+  AXNode,
+  NetworkRequest,
+  NetworkRequestsResult,
+  StorybookParams,
+} from "./types.js";
 
-export async function getStorybookA11yTree({
+class StorybookPageContext {
+  constructor(
+    public readonly page: Page,
+    private readonly browser: Browser,
+  ) {}
+
+  async [Symbol.asyncDispose]() {
+    await this.browser.close();
+  }
+}
+
+async function createStorybookPage({
   host,
   title,
   storyName,
   timeout = 30000,
-}: {
-  host: string;
-  title: string;
-  storyName: string;
-  timeout?: number;
-}): Promise<A11yNode> {
+}: StorybookParams): Promise<StorybookPageContext> {
   const url = generateStorybookUrl(host, title, storyName);
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
@@ -25,24 +39,26 @@ export async function getStorybookA11yTree({
     // Wait for the story to load
     await page.waitForSelector("body", { timeout });
 
-    // CDP セッションを取得 (Chromium 専用)
-    const client = await page.context().newCDPSession(page);
-
-    // Accessibility ドメインのコマンドを実行（型安全）
-    const response = (await client.send(
-      "Accessibility.getFullAXTree",
-    )) as AccessibilityTreeResponse;
-
-    // AXNode配列をA11yNodeツリーに変換
-    const a11yTree = convertAXNodesToA11yTree(response.nodes);
-
-    return a11yTree;
+    return new StorybookPageContext(page, browser);
   } catch (error) {
-    console.error("Error getting accessibility tree:", error);
-    throw error;
-  } finally {
     await browser.close();
+    throw error;
   }
+}
+
+export async function getStorybookA11yTree(
+  params: StorybookParams,
+): Promise<A11yNode> {
+  await using context = await createStorybookPage(params);
+
+  // CDP セッションを取得してAccessibilityドメインのコマンドを実行
+  const client = await context.page.context().newCDPSession(context.page);
+  const response = (await client.send(
+    "Accessibility.getFullAXTree",
+  )) as AccessibilityTreeResponse;
+
+  // AXNode配列をA11yNodeツリーに変換
+  return convertAXNodesToA11yTree(response.nodes);
 }
 
 function convertAXNodesToA11yTree(nodes: AXNode[]): A11yNode {
@@ -101,21 +117,72 @@ function convertAXNodesToA11yTree(nodes: AXNode[]): A11yNode {
   };
 }
 
-export async function getStorybookScreenshot({
+export async function getStorybookScreenshot(
+  params: StorybookParams,
+): Promise<Buffer> {
+  await using context = await createStorybookPage(params);
+
+  // Take screenshot
+  return await context.page.screenshot({
+    fullPage: true,
+    type: "png",
+  });
+}
+
+async function createStorybookPageWithNetworkTracking({
   host,
   title,
   storyName,
   timeout = 30000,
-}: {
-  host: string;
-  title: string;
-  storyName: string;
-  timeout?: number;
-}): Promise<Buffer> {
+}: StorybookParams): Promise<{
+  context: StorybookPageContext;
+  requests: Map<string, NetworkRequest>;
+}> {
   const url = generateStorybookUrl(host, title, storyName);
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext();
-  const page = await context.newPage();
+  const browserContext = await browser.newContext();
+  const page = await browserContext.newPage();
+  const requests = new Map<string, NetworkRequest>();
+
+  // Set up network request tracking BEFORE navigation
+  page.on("request", (request) => {
+    const networkRequest: NetworkRequest = {
+      method: request.method(),
+      requestId: request.url(),
+      requestTime: Date.now(),
+      resourceType: request.resourceType(),
+      status: "loading",
+      url: request.url(),
+    };
+    requests.set(request.url(), networkRequest);
+  });
+
+  page.on("response", (response) => {
+    const existingRequest = requests.get(response.url());
+    if (existingRequest) {
+      const updatedRequest: NetworkRequest = {
+        ...existingRequest,
+        mimeType: response.headers()["content-type"],
+        responseTime: Date.now(),
+        status: response.ok() ? "finished" : "failed",
+        statusCode: response.status(),
+      };
+      requests.set(response.url(), updatedRequest);
+    }
+  });
+
+  page.on("requestfailed", (request) => {
+    const existingRequest = requests.get(request.url());
+    if (existingRequest) {
+      const updatedRequest: NetworkRequest = {
+        ...existingRequest,
+        errorText: request.failure()?.errorText,
+        responseTime: Date.now(),
+        status: "failed",
+      };
+      requests.set(request.url(), updatedRequest);
+    }
+  });
 
   try {
     // Navigate to the Storybook iframe
@@ -124,19 +191,40 @@ export async function getStorybookScreenshot({
     // Wait for the story to load
     await page.waitForSelector("body", { timeout });
 
-    // Take screenshot
-    const screenshot = await page.screenshot({
-      fullPage: true,
-      type: "png",
-    });
-
-    return screenshot;
+    return {
+      context: new StorybookPageContext(page, browser),
+      requests,
+    };
   } catch (error) {
-    console.error("Error taking screenshot:", error);
-    throw error;
-  } finally {
     await browser.close();
+    throw error;
   }
+}
+
+export async function getStorybookNetworkRequests(
+  params: StorybookParams,
+): Promise<NetworkRequestsResult> {
+  const { context, requests } =
+    await createStorybookPageWithNetworkTracking(params);
+
+  await using _ = context;
+
+  // Wait a bit more to capture any additional network requests
+  await context.page.waitForTimeout(1000);
+
+  // Convert Map to array and calculate summary
+  const requestsList = Array.from(requests.values());
+  const summary = {
+    failed: requestsList.filter((req) => req.status === "failed").length,
+    finished: requestsList.filter((req) => req.status === "finished").length,
+    loading: requestsList.filter((req) => req.status === "loading").length,
+    total: requestsList.length,
+  };
+
+  return {
+    requests: requestsList,
+    summary,
+  };
 }
 
 function generateStorybookUrl(

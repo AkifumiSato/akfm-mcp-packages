@@ -12,6 +12,7 @@
     "includes": [
       "**",
       "!**/dist/**",
+      "!**/public/**",
       "!**/storybook-static/**",
       "!**/package.json",
       "!pnpm-lock.yaml",

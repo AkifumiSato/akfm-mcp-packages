@@ -4,7 +4,11 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { formatA11yResults } from "./formatter.js";
-import { getStorybookA11yTree, getStorybookScreenshot } from "./storybook.js";
+import {
+  getStorybookA11yTree,
+  getStorybookNetworkRequests,
+  getStorybookScreenshot,
+} from "./storybook.js";
 
 const server = new McpServer(
   {
@@ -111,6 +115,72 @@ server.registerTool(
         content: [
           {
             text: `Error taking screenshot: ${error}`,
+            type: "text" as const,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.registerTool(
+  "get_storybook_network_requests",
+  {
+    description: "Track network requests during Storybook story loading",
+    inputSchema: StorybookArgsSchema,
+  },
+  async ({
+    host = "http://localhost:6006",
+    timeout = 30000,
+    title,
+    storyName,
+  }) => {
+    try {
+      const networkResult = await getStorybookNetworkRequests({
+        host,
+        storyName,
+        timeout,
+        title,
+      });
+
+      const requestsText = networkResult.requests
+        .map((req) => {
+          const duration = req.responseTime
+            ? `${Math.round(req.responseTime - req.requestTime)}ms`
+            : "N/A";
+          const statusInfo =
+            req.status === "finished"
+              ? `${req.statusCode}`
+              : req.status === "failed"
+                ? `Failed: ${req.errorText}`
+                : "Loading";
+          return `${req.method} ${req.url} - ${statusInfo} (${duration}) [${req.resourceType || "unknown"}]`;
+        })
+        .join("\n");
+
+      const summaryText = `Summary: ${networkResult.summary.total} total requests
+- Finished: ${networkResult.summary.finished}
+- Failed: ${networkResult.summary.failed}
+- Loading: ${networkResult.summary.loading}`;
+
+      return {
+        content: [
+          {
+            text: `Network requests for ${title}/${storyName}:\n\n${summaryText}\n\nRequests:\n${requestsText}`,
+            type: "text" as const,
+          },
+          {
+            text: `Raw network data:\n\n${JSON.stringify(networkResult, null, 2)}`,
+            type: "text" as const,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            text: `Error tracking network requests: ${error}`,
             type: "text" as const,
           },
         ],

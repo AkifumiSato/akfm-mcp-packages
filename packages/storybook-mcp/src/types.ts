@@ -74,3 +74,62 @@ export type A11yNode = {
   children?: A11yNode[];
   [key: string]: unknown;
 };
+
+export type NetworkRequest = {
+  requestId: string;
+  url: string;
+  method: string;
+  status: "loading" | "finished" | "failed";
+  statusCode?: number;
+  requestTime: number;
+  responseTime?: number;
+  errorText?: string;
+  mimeType?: string;
+  resourceType?: string;
+};
+
+export type NetworkRequestsResult = {
+  requests: NetworkRequest[];
+  summary: {
+    total: number;
+    finished: number;
+    failed: number;
+    loading: number;
+  };
+};
+
+export type CDPNetworkRequestWillBeSentParams = {
+  requestId: string;
+  request: {
+    url: string;
+    method: string;
+  };
+  timestamp: number;
+  type?: string;
+};
+
+export type CDPNetworkResponseReceivedParams = {
+  requestId: string;
+  response: {
+    status: number;
+    mimeType: string;
+  };
+};
+
+export type CDPNetworkLoadingFinishedParams = {
+  requestId: string;
+  timestamp: number;
+};
+
+export type CDPNetworkLoadingFailedParams = {
+  requestId: string;
+  timestamp: number;
+  errorText: string;
+};
+
+export type StorybookParams = {
+  host: string;
+  title: string;
+  storyName: string;
+  timeout?: number;
+};
