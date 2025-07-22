@@ -8,7 +8,7 @@ This repository contains a collection of MCP servers that provide various functi
 
 ## Packages
 
-- **[@akfm/storybook-mcp](./packages/storybook-mcp)** - MCP server for retrieving some information from Storybook Stories
+- **[@akfm/storybook-mcp](./packages/storybook-mcp)** - Comprehensive MCP server for Storybook Story analysis including accessibility trees, screenshots, network tracking, and console logs
 
 ## Development
 
