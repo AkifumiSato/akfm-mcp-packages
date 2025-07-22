@@ -8,7 +8,8 @@
       "Bash(pnpm exec:*)",
       "Bash(turbo run:*)",
       "mcp__storybook-mcp__get_storybook_screenshot",
-      "mcp__storybook-mcp__get_storybook_a11y_tree"
+      "mcp__storybook-mcp__get_storybook_a11y_tree",
+      "Bash(pnpm build:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
