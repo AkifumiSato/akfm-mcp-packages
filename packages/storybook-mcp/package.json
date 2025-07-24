@@ -20,11 +20,11 @@
     "@axe-core/playwright": "4.10.1",
     "@modelcontextprotocol/sdk": "1.16.0",
     "just-kebab-case": "4.2.0",
-    "playwright": "1.52.0",
     "zod": "3.25.67"
   },
   "devDependencies": {
     "@types/node": "22.15.3",
+    "playwright": "1.52.0",
     "typescript": "5.8.2"
   },
   "engines": {
@@ -35,5 +35,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "peerDependencies": {
+    "playwright": "^1.52.0"
   }
 }
