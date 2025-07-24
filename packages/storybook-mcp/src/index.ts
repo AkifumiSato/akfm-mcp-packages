@@ -33,7 +33,7 @@ const StorybookArgsSchema = {
 server.registerTool(
   "get_storybook_a11y_tree",
   {
-    description: "Get accessibility tree from Storybook URL",
+    description: "Get accessibility tree from Storybook story. Parameters: 'title' is the story title from meta (e.g., 'Product'), 'storyName' is the exported constant name (e.g., 'Default', 'Loading') - NOT the display name.",
     inputSchema: StorybookArgsSchema,
   },
   async ({
@@ -80,7 +80,7 @@ server.registerTool(
 server.registerTool(
   "get_storybook_screenshot",
   {
-    description: "Take a screenshot of a Storybook story",
+    description: "Take a screenshot of a Storybook story. Parameters: 'title' is the story title from meta (e.g., 'Product'), 'storyName' is the exported constant name (e.g., 'Default', 'Loading') - NOT the display name.",
     inputSchema: StorybookArgsSchema,
   },
   async ({
@@ -128,7 +128,7 @@ server.registerTool(
 server.registerTool(
   "get_storybook_network_requests",
   {
-    description: "Track network requests during Storybook story loading",
+    description: "Track network requests during Storybook story loading. Parameters: 'title' is the story title from meta (e.g., 'Product'), 'storyName' is the exported constant name (e.g., 'Default', 'Loading') - NOT the display name.",
     inputSchema: StorybookArgsSchema,
   },
   async ({
@@ -194,7 +194,7 @@ server.registerTool(
 server.registerTool(
   "get_storybook_console_logs",
   {
-    description: "Capture console logs during Storybook story loading",
+    description: "Capture console logs during Storybook story loading. Parameters: 'title' is the story title from meta (e.g., 'Product'), 'storyName' is the exported constant name (e.g., 'Default', 'Loading') - NOT the display name.",
     inputSchema: StorybookArgsSchema,
   },
   async ({
