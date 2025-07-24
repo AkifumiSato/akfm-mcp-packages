@@ -25,7 +25,7 @@ export async function createStorybookPage(
 
   try {
     // Navigate to the Storybook iframe
-    await page.goto(url, { timeout, waitUntil: "networkidle" });
+    await page.goto(url, { timeout, waitUntil: "load" });
 
     // Wait for the story to load
     await page.waitForSelector("body", { timeout });
